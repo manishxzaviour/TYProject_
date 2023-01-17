@@ -92,4 +92,6 @@ while(True):
     #     print(faultL)
     en = time.time()
     print((en - st) * 1000)
+    if cv.waitKey(25) & 0xFF == ord('q'):
+       break
 cv.waitKey()
