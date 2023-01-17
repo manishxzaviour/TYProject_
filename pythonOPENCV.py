@@ -55,7 +55,7 @@ while(True):
     image = cv.imdecode(image, cv.IMREAD_COLOR)
     image=image.astype(np.uint8)
     image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    image = image[0:300, 50:700];
+    image = image[0:300, :];
     imageC = cv.bitwise_not(image);
     image = cv.filter2D(image, -1, np.ones([5, 5]) / 25)
     imageEnh = cv.adaptiveThreshold(image, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
@@ -80,7 +80,7 @@ while(True):
     probF = 0;
     faultL = []
     for x in range(0, 300):
-        for y in range(0, 590):
+        for y in range(0, 640):
             if canny_output[x][y] == 255 and abs(x - avp) > threshP:
                 cdstP[x][y] = [0, 0, 255]
                 faultL.append([x, y]);
