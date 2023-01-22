@@ -1,0 +1,32 @@
+<MainWidget>:
+    title:title
+    config:config
+    canvas.before:
+        Color:
+            rgba:(.8,.8,.8,1)
+        Rectangle:
+            size: root.size
+            pos: root.pos
+    GridLayout:
+        cols:1
+        size: root.size
+        GridLayout:
+            cols:2
+            padding: 0,0,20,0
+            size_hint_y: None
+            size_y:"100dp"
+            Label:
+                id: title
+                text: "Lineman Autonomous Robot Assistant"
+                font_family:"Arial"
+                font_size: "30dp"
+                color:"#00A5FF"
+            Button:
+                id:config
+                background_normal:"logo.png"
+                background_down :"logo2.png"
+                #size_hint:  .4, .19
+                size_hint: None,None
+                size: "188dp", "88dp"
+                on_press: root.configBp()
+        ImageW
