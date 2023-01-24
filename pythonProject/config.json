@@ -1,0 +1,20 @@
+{
+    "url1": "http://192.168.0.104/",
+    "url2": "http://192.168.0.104/",
+    "resolution": 8,
+    "quality": 10,
+    "iheight": 400,
+    "thresh": 0,
+    "filter": 0,
+    "brightness": -2,
+    "contrast": -2,
+    "saturation": -2,
+    "ae": 0,
+    "aecS": 1,
+    "aecDip": 1,
+    "gain": 0,
+    "hflp": 0,
+    "vflp": 0,
+    "avgK": 5,
+    "dilateBlb": 3
+}

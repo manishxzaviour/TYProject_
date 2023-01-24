@@ -1,6 +1,15 @@
-<MainWidget>:
-    title:title
+<Label>:
+    font_family: "Arial"
+    font_size:20
+<Button>:
+<Page1>:
     config:config
+    imageScene:imageScene
+    onT:onT
+    distanceT:distanceT
+    convg:convg
+    tog:tog
+    logc:logc
     canvas.before:
         Color:
             rgba:(.8,.8,.8,1)
@@ -10,23 +19,289 @@
     GridLayout:
         cols:1
         size: root.size
+        BoxLayout:
+            padding: 20,0,20,0
+            orientation:"horizontal"
+            size_hint: 1, .4
+            AnchorLayout:
+                anchor_x:"left"
+                ToggleButton:
+                    id:tog
+                    background_normal:"play.png"
+                    background_down :"pause.png"
+                    size_hint: None,None
+                    size:root.width/8, root.width/8
+                    on_state:root.toggle(self.state)
+            AnchorLayout:
+                anchor_x:"right"
+                Button:
+                    id:config
+                    background_normal:"logo.png"
+                    background_down :"logo2.png"
+                    size_hint: None,None
+                    size: root.width/3.8, root.width/8
+                    pos_hint_x:None
+                    pos: root.width-self.width-20, self.y
+                    on_press:
+                        root.manager.current="configScreen"
+                        root.stop()
+        ImageW:
+            id:imageScene
+            canvas.before:
+                Color:
+                    rgba: (.2,.2,.2,1)
+                Rectangle:
+                    pos: self.pos
+                    size: self.width, self.height
         GridLayout:
             cols:2
-            padding: 0,0,20,0
-            size_hint_y: None
-            size_y:"100dp"
             Label:
-                id: title
-                text: "Lineman Autonomous Robot Assistant"
-                font_family:"Arial"
+                text: "on_Time(s): "
+                color:"#005560"
                 font_size: "30dp"
-                color:"#00A5FF"
-            Button:
-                id:config
-                background_normal:"logo.png"
-                background_down :"logo2.png"
-                #size_hint:  .4, .19
-                size_hint: None,None
-                size: "188dp", "88dp"
-                on_press: root.configBp()
-        ImageW
+                id:onT
+            Label:
+                text: "Distance_Travelled(m): "
+                color:"#005560"
+                font_size: "30dp"
+                id:distanceT
+            Label:
+                text:"Current_Convergence:"
+                color:"#9e035d"
+                font_size: "30dp"
+                id:convg
+            Label:
+                text:f"Tag_log(n): {root.logC}"
+                color:"#9e035d"
+                font_size: "30dp"
+                id:logc
+<ConfigP1>:
+    url1:url1
+    url2:url2
+    resolutionL:resolutionL
+    resolution:resolution
+    qualityL:qualityL
+    quality:quality
+    filter:filter
+    brightnessL:brightnessL
+    brightness:brightness
+    contrastL:contrastL
+    contrast:contrast
+    saturationL:saturationL
+    saturation:saturation
+    aeL:aeL
+    ae:ae
+    aecS:aecS
+    aecDip:aecDip
+    gainL:gainL
+    gain:gain
+    hflp:hflp
+    vflp:vflp
+    subm:subm
+    heightL:heightL
+    iheight:iheight
+    threshL:threshL
+    thresh:thresh
+    canvas.before:
+        Color:
+            rgba:(.5,.5,.5,1)
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    BoxLayout:
+        orientation:"vertical"
+        pos:root.pos
+        size:root.size
+        Label:
+            canvas.before:
+                Color:
+                    rgba:(1,1,1,.8)
+                Rectangle:
+                    pos: self.pos
+                    size:self.size
+            size_hint:1, .1
+            pos: root.pos
+            text: "Lineman Autonomous Robot Assistant"
+            font_size: "20dp"
+            color:"#006382"
+        GridLayout:
+            pos:root.pos
+            size:root.size
+            cols:2
+            Label:
+                text: "IP_CAM1_Front: "
+            TextInput:
+                id:url1
+                multiline: False
+            Label:
+                text: "IP_CAM2_Back: "
+            TextInput:
+                id:url2
+                multiline: False
+            Label:
+                id:resolutionL
+                text: "Resolution: "
+            BoxLayout:
+                Button:
+                    text:"<"
+                    font_size:25
+                    on_press: root.updRes(-1)
+                Label:
+                    id:resolution
+                    text:"160x120"
+                Button:
+                    text:">"
+                    font_size:25
+                    on_press: root.updRes(1)
+            Label:
+                id: qualityL
+                text:   "Image_quality (10-63): Max(10)"
+            Slider:
+                id:quality
+                min:10
+                max:63
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                on_touch_move: root.ids.qualityL.text=f'Image_quality (10-63): {int(root.ids.quality.value)}'
+                step:2
+            Label:
+                id: heightL
+                text:   "Image_track_Height (100-1000)px: "
+            Slider:
+                id:iheight
+                min:100
+                max:1000
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:100
+                on_touch_move: root.ids.heightL.text=f'Image_track_Height (100-1000)px: {int(root.ids.iheight.value)}'
+            Label:
+                id: threshL
+                text:   "Image_edge_threshold(px): "
+            Slider:
+                id:thresh
+                min:0
+                max:100
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:2
+                on_touch_move: root.ids.threshL.text=f'Image_edge_threshold(px): {int(root.ids.thresh.value)}'
+            Label:
+                id: avgKL
+                text:   "Smoothening_kernel (1-15): "
+            Slider:
+                id:avgK
+                min:1
+                max:10
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                on_touch_move: root.ids.avgKL.text=f'Smoothening_kernel (1-15): {int(root.ids.avgK.value)}'
+                step:1
+            Label:
+                id: dilateBlbL
+                text:   "Pixel_dilate (1-10): "
+            Slider:
+                id:dilateBlb
+                min:1
+                max:10
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                on_touch_move: root.ids.dilateBlbL.text=f'pixel_dilate (1-10): {int(root.ids.dilateBlb.value)}'
+                step:1
+            Label:
+                text:"filter: "
+            BoxLayout:
+                Button:
+                    text:"<"
+                    font_size:25
+                    on_press: root.updFilt(-1)
+                Label:
+                    id:filter
+                    text:"No Effect"
+                Button:
+                    text:">"
+                    font_size:25
+                    on_press: root.updFilt(1)
+            Label:
+                id: brightnessL
+                text:   "Brightness (-2,2): "
+            Slider:
+                id: brightness
+                min:-2
+                max:2
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.brightnessL.text=f'Brightness (-2,2): {root.ids.brightness.value}'
+            Label:
+                id: contrastL
+                text:   "Contrast (-2,2): "
+            Slider:
+                id: contrast
+                min:-2
+                max:2
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.contrastL.text=f'Contrast (-2,2): {root.ids.contrast.value}'
+            Label:
+                id: saturationL
+                text:   "SaturationL (-2,2): "
+            Slider:
+                id: saturation
+                min:-2
+                max:2
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.saturationL.text=f'Saturation (-2,2): {root.ids.saturation.value}'
+            Label:
+                id: aeL
+                text:   "AE_level (-2,2): "
+            Slider:
+                id: ae
+                min:-2
+                max:2
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.aeL.text=f'Saturation (-2,2): {root.ids.ae.value}'
+            Label:
+                text:"AEC_sensor"
+            Switch:
+                id:aecS
+            Label:
+                text:"AEC_dsp"
+            Switch:
+                id:aecDip
+            Label:
+                id: gainL
+                text:   "Gain_level (2x-128x): "
+            Slider:
+                id: gain
+                min:0
+                max:6
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.gainL.text=f'Gain_level (2x-128x): {root.ids.gain.value}'
+            Label:
+                text:"H_flip"
+            Switch:
+                id:hflp
+            Label:
+                text:"V_flip"
+            Switch:
+                id:vflp
+        Button:
+            id:subm
+            size_hint: 1, .2
+            pos:root.pos
+            text:"Save"
+            font_size:40
+            on_press:
+                root.manager.current="mainScreen"
+                root.save()
+
+
+
