@@ -36,6 +36,7 @@ class ImageW(Widget):
     iheight = 0
     dilateBlb=np.ones([5, 5], np.uint8)
     avgK=np.ones([5, 5])
+    distance=[0,0]
     def __init__(self, **kwargs):
         super(ImageW, self).__init__(**kwargs)
         self.image1 = Image(pos=self.pos, size=(self.width / 2 - 10, self.height - 10))
@@ -102,7 +103,7 @@ class ImageW(Widget):
                     cdstP[x][y] = [0, 0, 255]
                     self.faultL1.append([x, y]);
                     self.probF[0] += 1
-        # cv.imshow('img', cdstP)
+        cv.imshow('img', image)
         buffer = cdstP.tostring()
         texture = Texture.create(size=(cdstP.shape[1], cdstP.shape[0]), colorfmt='bgr')
         texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt='ubyte')
@@ -114,11 +115,11 @@ class ImageW(Widget):
         print(f'frame1 :{int((en - st) * 1000)}')
         if (self.probF[0] > self.threshC):
             x = open('log1.txt', 'a')
-            x.write('!! mechanical failure detected !!')
-            x.write('\n')
-            x.write('fault detected at pixel locations:')
-            x.write('\n')
-            x.write(str(self.faultL1))
+            # x.write('!! mechanical failure detected !!')
+            # x.write('\n')
+            x.write(f'fault detected at [location] {self.distance[0]} (m) from initial position')
+            # x.write('\n')
+            # x.write(str(self.faultL1))
             x.write('\n')
             x.close()
             self.parent.parent.logC[0]+=1
@@ -142,6 +143,7 @@ class ImageW(Widget):
         canny_output = cv.Canny(imageEnh, 80, 150, )
         cannyBlb = cv.dilate(canny_output, self.dilateBlb);
         cdstP = cv.cvtColor(cannyBlb, cv.COLOR_GRAY2BGR)
+        cv.imshow('img2',image)
         linesP = cv.HoughLinesP(cannyBlb, 1, np.pi / 180, 50, None, 50, 10)
         if linesP is not None:
             for i in range(0, len(linesP)):
@@ -178,11 +180,12 @@ class ImageW(Widget):
         print(f'frame2 :{int((en - st) * 1000)}')
         if (self.probF[1] > self.threshC):
             x = open('log2.txt', 'a')
-            x.write('!! mechanical failure detected !!')
-            x.write('\n')
-            x.write('fault detected at pixel locations:')
-            x.write('\n')
-            x.write(str(self.faultL2))
+            # x.write('!! mechanical failure detected !!')
+            # x.write('\n')
+            x.write(f'fault detected at [location] {self.distance[1]} (m) from initial position')
+            # x.write('\n')
+            # x.write(str(self.faultL2))
+            # x.write()
             x.write('\n')
             x.close()
             self.parent.parent.logC[1]+=1
@@ -221,14 +224,14 @@ class Page1(Screen):
         self.avgK=np.ones([jsonD["avgK"], jsonD["avgK"]])
         self.jsonD = jsonD
         try:
-            r1 = requests.get(self.url1, timeout=1)
+            r1 = requests.get(self.url1, timeout=2)
             self.flag1 = 1
         except requests.exceptions.ConnectionError:
             self.ids.imageScene.image1.source = 'warning.png'
             print(f"!!error: Connection Timeout [cam1] url : {self.url1}!!")
             self.flag1 = 0
         try:
-            r2 = requests.get(self.url2, timeout=1)
+            r2 = requests.get(self.url2, timeout=2)
             self.flag2 = 1
         except requests.exceptions.ConnectionError:
             self.ids.imageScene.image2.source = 'warning.png'
@@ -244,8 +247,8 @@ class Page1(Screen):
             requests.get(self.url1 + "control?", params={'var': "aec", "val": self.jsonD["aecS"]})
             requests.get(self.url1 + "control?", params={'var': "aec2", "val": self.jsonD["aecDip"]})
             requests.get(self.url1 + "control?", params={'var': "gainceiling", "val": self.jsonD["gain"]})
-            requests.get(self.url1 + "control?", params={'var': "hmirror", "val": self.jsonD["hflp"]})
-            requests.get(self.url1 + "control?", params={'var': "vflip", "val": self.jsonD["vflp"]})
+            requests.get(self.url1 + "control?", params={'var': "hmirror", "val": self.jsonD["hflp1"]})
+            requests.get(self.url1 + "control?", params={'var': "vflip", "val": self.jsonD["vflp1"]})
             Clock.schedule_interval(self.ids.imageScene.update1, self.jsonD["resolution"] / 8 + 0.01)
             requests.get(self.url1 + "control?", params={'var': "special_effect", "val": self.jsonD["filter"]})
 
@@ -260,8 +263,8 @@ class Page1(Screen):
             requests.get(self.url2 + "control?", params={'var': "aec", "val": self.jsonD["aecS"]})
             requests.get(self.url2 + "control?", params={'var': "aec2", "val": self.jsonD["aecDip"]})
             requests.get(self.url2 + "control?", params={'var': "gainceiling", "val": self.jsonD["gain"]})
-            requests.get(self.url2 + "control?", params={'var': "hmirror", "val": self.jsonD["hflp"]})
-            requests.get(self.url2 + "control?", params={'var': "vmirror", "val": self.jsonD["vflp"]})
+            requests.get(self.url2 + "control?", params={'var': "hmirror", "val": self.jsonD["hflp2"]})
+            requests.get(self.url2 + "control?", params={'var': "vmirror", "val": self.jsonD["vflp2"]})
             requests.get(self.url2 + "control?", params={'var': "special_effect", "val": self.jsonD["filter"]})
             Clock.schedule_interval(self.ids.imageScene.update2, self.jsonD["resolution"] / 8 + 0.01)
         Clock.schedule_interval(self.on_time_upd, 1)
@@ -309,8 +312,10 @@ class ConfigP1(Screen):
         self.ids.gain.value = jsonD["gain"]
         self.ids.aecS.active = (jsonD["aecS"])
         self.ids.aecDip.active = (jsonD["aecDip"])
-        self.ids.hflp.active = (jsonD["hflp"])
-        self.ids.vflp.active = (jsonD["vflp"])
+        self.ids.hflp1.active = (jsonD["hflp1"])
+        self.ids.vflp1.active = (jsonD["vflp1"])
+        self.ids.hflp2.active = (jsonD["hflp2"])
+        self.ids.vflp2.active = (jsonD["vflp2"])
         self.ids.avgK.value=jsonD["avgK"]
         self.ids.dilateBlb.value=jsonD["dilateBlb"]
 
@@ -330,8 +335,10 @@ class ConfigP1(Screen):
             "aecS": int(self.ids.aecS.active),
             "aecDip": int(self.ids.aecDip.active),
             "gain": int(self.ids.gain.value),
-            "hflp": int(self.ids.hflp.active),
-            "vflp": int(self.ids.vflp.active),
+            "hflp1": int(self.ids.hflp1.active),
+            "vflp1": int(self.ids.vflp1.active),
+            "hflp2": int(self.ids.hflp2.active),
+            "vflp2": int(self.ids.vflp2.active),
             "avgK": int(self.ids.avgK.value),
             "dilateBlb":int(self.ids.dilateBlb.value)
         }

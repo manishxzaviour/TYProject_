@@ -95,8 +95,10 @@
     aecDip:aecDip
     gainL:gainL
     gain:gain
-    hflp:hflp
-    vflp:vflp
+    hflp1:hflp1
+    vflp1:vflp1
+    hflp2:hflp2
+    vflp2:vflp2
     subm:subm
     heightL:heightL
     iheight:iheight
@@ -286,13 +288,21 @@
                 step:1
                 on_touch_move: root.ids.gainL.text=f'Gain_level (2x-128x): {root.ids.gain.value}'
             Label:
-                text:"H_flip"
+                text:"H_flip1"
             Switch:
-                id:hflp
+                id:hflp1
             Label:
-                text:"V_flip"
+                text:"V_flip1"
             Switch:
-                id:vflp
+                id:vflp1
+            Label:
+                text:"H_flip2"
+            Switch:
+                id:hflp2
+            Label:
+                text:"V_flip2"
+            Switch:
+                id:vflp2
         Button:
             id:subm
             size_hint: 1, .2
