@@ -59,13 +59,13 @@ class HCSR04:
 
 
 class ADXL345:
-    def __init__(self,i2c,addr=const(0x53)):
+    def __init__(self,Pscl,Pda,addr=const(0x53)):
         self.device = device
         self.regAddress = const(0x32)
         self.TO_READ = 6
         self.buff = bytearray(6)
         self.addr = addr
-        self.i2c = i2c
+        self.i2c = machine.I2C(scl=Pin(Pcl),sda=Pin(Pda), freq=10000)
         b = bytearray(1)
         b[0] = 0
         self.i2c.writeto_mem(self.addr,0x2d,b)
