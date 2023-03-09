@@ -85,9 +85,9 @@ static esp_err_t motorRev(httpd_req_t *req){
             return ESP_FAIL;
         }
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            if (httpd_query_key_value(buf, "revs", revs, sizeof(variable)) == ESP_OK &&
-                httpd_query_key_value(buf, "dir", value, sizeof(value)) == ESP_OK && 
-                httpd_query_key_value(buf, "delay", Delay, sizeof(value)) == ESP_OK) {
+            if (httpd_query_key_value(buf, "revs", revs, sizeof(revs)) == ESP_OK &&
+                httpd_query_key_value(buf, "dir", dir, sizeof(dir)) == ESP_OK && 
+                httpd_query_key_value(buf, "delay", Delay, sizeof(Delay)) == ESP_OK) {
             } else {
                 free(buf);
                 httpd_resp_send_404(req);
@@ -110,9 +110,9 @@ static esp_err_t motorRev(httpd_req_t *req){
     // delayMicroseconds(250);
     digitalWrite(dir_pin,(dirV)? HIGH:LOW);
     for (int i = 0; i <  revsV*n_step; i++) {
-    digitalWrite(stepPin, HIGH);
+    digitalWrite(step_pin, HIGH);
     delayMicroseconds(DelayV);
-    digitalWrite(stepPin, LOW);
+    digitalWrite(step_pin, LOW);
     delayMicroseconds(DelayV);
   }
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -685,7 +685,7 @@ void startCameraServer(){
         .method    = HTTP_GET,
         .handler   = motorRev,
         .user_ctx  = NULL
-    }
+    };
 
     ra_filter_init(&ra_filter, 20);
     

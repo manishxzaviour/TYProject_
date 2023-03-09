@@ -101,7 +101,7 @@ void setup() {
   delay(250);
   Serial.println("");
   Serial.println("WiFi started");
-  startCameraServer()
+  startCameraServer();
   Serial.print("Camera Ready! Use 'http://");
   Serial.print(WiFi.softAPIP());
   Serial.println("' to connect");
