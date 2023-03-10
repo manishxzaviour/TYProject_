@@ -186,6 +186,13 @@ static esp_err_t ota(httpd_req_t *req)
     }
 }
 
+//battery percentage int v
+static esp_er_t batP(httpd_req_t *req){
+    int batR = analogRead(bat_pin);
+    res = httpd_resp_send(req, (const char *)String(batR).c_str(),sizeof(String(batR)));
+    return res;
+}
+
 static ra_filter_t *ra_filter_init(ra_filter_t *filter, size_t sample_size)
 {
     memset(filter, 0, sizeof(ra_filter_t));
@@ -876,6 +883,11 @@ void startCameraServer()
         .method = HTTP_GET,
         .handler = ota,
         .user_ctx = NULL};
+    httpd_uri_t bat_uri = {
+        .uri = "/batp",
+        .method = HTTP_GET,
+        .handler = batP,
+        .user_ctx = NULL};
 
     ra_filter_init(&ra_filter, 20);
 
@@ -905,6 +917,7 @@ void startCameraServer()
         httpd_register_uri_handler(camera_httpd, &capture_uri);
         httpd_register_uri_handler(camera_httpd, &motor_uri);
         httpd_register_uri_handler(camera_httpd, &ota_uri);
+        httpd_register_uri_handler(camera_httpd, &bat_uri);
     }
 
     config.server_port += 1;

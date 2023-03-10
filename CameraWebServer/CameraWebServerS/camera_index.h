@@ -2,6 +2,7 @@
 
 #define step_pin 0
 #define dir_pin 0
+#define bat_pin 0
 #define n_step 200
 
 //File: index_ov2640.html.gz, Size: 4316

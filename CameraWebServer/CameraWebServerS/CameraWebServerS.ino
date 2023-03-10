@@ -49,6 +49,7 @@ void setup()
   digitalWrite(led, LOW);
   pinMode(step_pin, OUTPUT);
   pinMode(dir_pin, OUTPUT);
+  pinMode(bat_pin, OUTPUT);
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
