@@ -1,7 +1,6 @@
 <Label>:
     font_family: "Arial"
     font_size:20
-<Button>:
 <Page1>:
     config:config
     imageScene:imageScene
@@ -10,6 +9,8 @@
     convg:convg
     tog:tog
     logc:logc
+    bat1:bat1
+    bat2:bat2
     canvas.before:
         Color:
             rgba:(.8,.8,.8,1)
@@ -45,6 +46,29 @@
                     on_press:
                         root.manager.current="configScreen"
                         root.stop()
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint: 1, .4
+            AnchorLayout:
+                anchor_x:"left"
+                Button:
+                    id:bat1
+                    text:f"batL_V:\n {root.getBatV(1)}"
+                    size_hint: None,None
+                    size:root.width/8, root.width/17
+                    on_press:
+                        root.ids.bat1.text=f'batL_V:\n {root.getBatV(1)}'
+            AnchorLayout:
+                anchor_x:"right"
+                Button:
+                    id:bat2
+                    text:f"batR_V:\n {root.getBatV(2)}"
+                    size_hint: None,None
+                    size: root.width/8, root.width/17
+                    pos_hint_x:None
+                    pos: root.width-self.width, self.y
+                    on_press:
+                        root.ids.bat2.text=f'batR_V:\n {root.getBatV(2)}'
         ImageW:
             id:imageScene
             canvas.before:
@@ -104,6 +128,12 @@
     iheight:iheight
     threshL:threshL
     thresh:thresh
+    mDir:mDir
+    mRev:mRev
+    mRevL:mRevL
+    mDelayL:mDelayL
+    mDelay:mDelay
+
     canvas.before:
         Color:
             rgba:(.5,.5,.5,1)
@@ -134,12 +164,12 @@
                 text: "IP_CAM1_Front: "
             TextInput:
                 id:url1
-                multiline: False
+                multiline:False
             Label:
                 text: "IP_CAM2_Back: "
             TextInput:
                 id:url2
-                multiline: False
+                multiline:False
             Label:
                 id:resolutionL
                 text: "Resolution: "
@@ -303,6 +333,32 @@
                 text:"V_flip2"
             Switch:
                 id:vflp2
+            Label:
+                text:"motor_Dir (on = f ; off = r)"
+            Switch:
+                id:mDir
+            Label:
+                id: mRevL
+                text:   "motor_rev_per_cycle (0-100): "
+            Slider:
+                id: mRev
+                min:0
+                max:100
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:1
+                on_touch_move: root.ids.mRevL.text=f'motor_rev_per_cycle (0-100): {root.ids.mRev.value}'
+            Label:
+                id: mDelayL
+                text:   "motor_delay_per_rev (0-5000): "
+            Slider:
+                id: mDelay
+                min:0
+                max:5000
+                value_track: True
+                value_track_color: (1,0,0,.3)
+                step:100
+                on_touch_move: root.ids.mDelayL.text=f'motor_delay_per_rev (0-5000): {root.ids.mDelay.value}'
         Button:
             id:subm
             size_hint: 1, .2

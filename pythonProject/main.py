@@ -11,6 +11,8 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.widget import Widget
+from kivy.config import Config
+from kivy.core.window import Window
 import os, sys
 from kivy.resources import resource_add_path, resource_find
 
@@ -123,6 +125,7 @@ class ImageW(Widget):
             x.write('\n')
             x.close()
             self.parent.parent.logC[0]+=1
+        requests.get(self.url1 + 'motorrev?', params={'revs': self.jsonD["mRev"], "dir": self.jsonD["mDir"],'delay':self.jsonD["mDelay"]})
 
     def update2(self, dt):
         self.url1 = self.parent.parent.url1
@@ -189,6 +192,7 @@ class ImageW(Widget):
             x.write('\n')
             x.close()
             self.parent.parent.logC[1]+=1
+        requests.get(self.url2 + 'motorrev?', params={'revs': self.jsonD["mRev"], "dir": self.jsonD["mDir"],'delay':self.jsonD["mDelay"]})
 
 
 
@@ -281,7 +285,18 @@ class Page1(Screen):
             self.stop()
         else:
             self.start()
-
+    def getBatV(self,bat):
+        res="."
+        try:
+            if (bat):
+                res= requests.get(self.url1 + "/batp", timeout=2)
+            else:
+                res= requests.get(self.url2 + "/batp", timeout=2)
+        except requests.exceptions.ConnectionError:
+            print("check connection no response(battery)")
+            print(bat)
+            return res
+        return res
     def on_time_upd(self, dt):
         self.ids.onT.text = str(f'On_Time(s) : {round(self.time)}')
         self.ids.logc.text=str(f'Tag_log(n): {self.logC}')
@@ -316,6 +331,9 @@ class ConfigP1(Screen):
         self.ids.vflp1.active = (jsonD["vflp1"])
         self.ids.hflp2.active = (jsonD["hflp2"])
         self.ids.vflp2.active = (jsonD["vflp2"])
+        self.ids.mDir.active = (jsonD["mDir"])
+        self.ids.mRev.value = (jsonD["mRev"])
+        self.ids.mDelay.value = (jsonD["mDelay"])
         self.ids.avgK.value=jsonD["avgK"]
         self.ids.dilateBlb.value=jsonD["dilateBlb"]
 
@@ -339,6 +357,9 @@ class ConfigP1(Screen):
             "vflp1": int(self.ids.vflp1.active),
             "hflp2": int(self.ids.hflp2.active),
             "vflp2": int(self.ids.vflp2.active),
+            "mDir": int(self.ids.mDir.active),
+            "mRev": int(self.ids.mRev.value),
+            "mDelay": int(self.ids.mDelay.value),
             "avgK": int(self.ids.avgK.value),
             "dilateBlb":int(self.ids.dilateBlb.value)
         }
@@ -381,12 +402,14 @@ class laraApp(App):
         sm = ScreenManager()
         sm.add_widget(Page1(name="mainScreen"))
         sm.add_widget(ConfigP1(name="configScreen"))
+        Window.size = (1000, 900)
+        Window.top=0;
+        Window.left=0;
         return sm
 
 
 if __name__ == '__main__':
     laraApp().run()
-
 # url = 'http://192.168.0.104/capture?_cb='
 # requests.get('http://192.168.0.104/control?var=framesize&val=8')
 # threshP = 40
